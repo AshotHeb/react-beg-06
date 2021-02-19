@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { Component } from 'react';
+import styles from './addTask.module.css';
 
-class ToDo extends React.Component {
+class AddTask extends Component {
     state = {
-        tasks: ["Task 1", "Task 2", "Task 3"],
-        inputValue: ""
+        inputValue: ''
     }
     handleChange = (event) => {
         const { value } = event.target;
@@ -11,42 +11,37 @@ class ToDo extends React.Component {
             inputValue: value
         });
     }
-    handleSubmit = () => {
-        const tasks = [...this.state.tasks];
-        tasks.push(this.state.inputValue);
+    //props.handleSubmit(newTask);
+    handleS = () => {
+        if(!this.state.inputValue) 
+            return;
+        this.props.handleSubmit(this.state.inputValue);
         this.setState({
-            tasks,
-            inputValue: ""
+            inputValue: ''
         });
-
     }
+
     render() {
-        const tasksJSX = this.state.tasks.map(function (item, index) {
-            return <p key={index}>{item}</p>;
-        });
         return (
             <div>
-                <h1>ToDo Component</h1>
+                <h1>AddTask Component</h1>
                 <div>
                     <input
                         type="text"
                         placeholder="Add Task"
                         onChange={this.handleChange}
                         value={this.state.inputValue}
+                        className={styles.input}
                     />
                     <button
-                        onClick={this.handleSubmit}
+                        onClick={this.handleS}
                     >
                         Add
                     </button>
-                </div>
-                <div className="tasks_wrapper">
-                    {tasksJSX}
                 </div>
             </div>
         );
     }
 };
 
-export default ToDo;
-
+export default AddTask;

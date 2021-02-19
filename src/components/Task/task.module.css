@@ -1,0 +1,9 @@
+.task {
+    padding: 15px 30px;
+    background-color: rgba(94, 15, 184, .5);
+    border: 1px solid black;
+}
+
+.active {
+    background-color: green;
+}
