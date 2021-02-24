@@ -1,4 +1,8 @@
 .heading1 {
-   font-size:100px;
-   color:red;
+   font-size: 50px;
+   color: rgb(0, 180, 252);
+}
+
+.customTest {
+   background-color: rgba(62, 62, 116, .5);
 }

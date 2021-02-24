@@ -11,7 +11,7 @@ class AddTask extends Component {
             inputValue: value
         });
     }
-    //props.handleSubmit(newTask);
+
     handleS = () => {
         if(!this.state.inputValue) 
             return;
