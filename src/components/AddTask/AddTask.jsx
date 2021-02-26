@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import styles from './addTask.module.css';
+import { Form, Button, InputGroup } from 'react-bootstrap';
 
 class AddTask extends Component {
     state = {
@@ -11,10 +12,23 @@ class AddTask extends Component {
             inputValue: value
         });
     }
-
-    handleS = () => {
-        if(!this.state.inputValue) 
+    // handlePress = (event) => {
+    //     const { key } = event;
+    //     if (key !== 'Enter')
+    //         return;
+    //     this.props.handleSubmit(this.state.inputValue);
+    //     this.setState({
+    //         inputValue: ''
+    //     });
+    // }
+    handleS = ({ key, type }) => {
+        if (!this.state.inputValue ||
+            (type === 'keypress' && key !== 'Enter')
+        )
             return;
+
+
+
         this.props.handleSubmit(this.state.inputValue);
         this.setState({
             inputValue: ''
@@ -24,21 +38,25 @@ class AddTask extends Component {
     render() {
         return (
             <div>
-                <h1>AddTask Component</h1>
-                <div>
-                    <input
+                <InputGroup className="mb-5 mt-5">
+                    <Form.Control
                         type="text"
                         placeholder="Add Task"
                         onChange={this.handleChange}
+                        onKeyPress={this.handleS}
                         value={this.state.inputValue}
                         className={styles.input}
                     />
-                    <button
-                        onClick={this.handleS}
-                    >
-                        Add
-                    </button>
-                </div>
+                    <InputGroup.Append>
+                        <Button
+                            variant="primary"
+                            onClick={this.handleS}
+                            className="ml-3"
+                        >
+                            Add
+                    </Button>
+                    </InputGroup.Append>
+                </InputGroup>
             </div>
         );
     }
