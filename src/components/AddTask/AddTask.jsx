@@ -12,15 +12,6 @@ class AddTask extends Component {
             inputValue: value
         });
     }
-    // handlePress = (event) => {
-    //     const { key } = event;
-    //     if (key !== 'Enter')
-    //         return;
-    //     this.props.handleSubmit(this.state.inputValue);
-    //     this.setState({
-    //         inputValue: ''
-    //     });
-    // }
     handleS = ({ key, type }) => {
         if (!this.state.inputValue ||
             (type === 'keypress' && key !== 'Enter')
@@ -36,6 +27,7 @@ class AddTask extends Component {
     }
 
     render() {
+        const { isAnyTaskChecked } = this.props;
         return (
             <div>
                 <InputGroup className="mb-5 mt-5">
@@ -46,12 +38,14 @@ class AddTask extends Component {
                         onKeyPress={this.handleS}
                         value={this.state.inputValue}
                         className={styles.input}
+                        disabled={isAnyTaskChecked}
                     />
                     <InputGroup.Append>
                         <Button
                             variant="primary"
                             onClick={this.handleS}
                             className="ml-3"
+                            disabled={isAnyTaskChecked}
                         >
                             Add
                     </Button>

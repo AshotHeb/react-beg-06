@@ -3,28 +3,41 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { Card, Button } from 'react-bootstrap';
 
-const Task = ({ task, handleDeleteTask }) => {
+const Task = ({
+    task,
+    handleDeleteTask,
+    handleToggleCheckTask,
+    isAnyTaskChecked,
+    isChecked
+}) => {
+    const cls = [styles.task];
+    if (isChecked)
+        cls.push(styles.checked);
 
-    // const handleDelete = (e) => {
-    //     handleDeleteTask(task._id);
-    // }
-    
     return (
-        <Card className={styles.task}>
+        <Card className={cls.join(' ')}>
+            <input
+                type="checkbox"
+                onClick={() => handleToggleCheckTask(task._id)}
+            />
             <Card.Body>
                 <Card.Title style={{ color: 'white' }}>{task.text}</Card.Title>
                 <Button
                     variant="danger"
-                    onClick={(e) => handleDeleteTask(task._id)}
+                    onClick={() => handleDeleteTask(task._id)}
+                    disabled={isAnyTaskChecked}
                 >
                     <FontAwesomeIcon icon={faTrash} />
                 </Button>
-                <Button variant="warning" className="ml-3">
+                <Button
+                    variant="warning"
+                    className="ml-3"
+                    disabled={isAnyTaskChecked}
+                >
                     <FontAwesomeIcon icon={faEdit} />
                 </Button>
             </Card.Body>
         </Card>
-
     );
 };
 

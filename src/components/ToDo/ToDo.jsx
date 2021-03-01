@@ -2,7 +2,7 @@ import React from 'react';
 import Task from '../Task/Task';
 import AddTask from '../AddTask/AddTask';
 import styles from './todo.module.css';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import idGenerator from '../../utils/idGenerator';
 
 const tasksWrapperRowCls = [
@@ -26,6 +26,7 @@ class ToDo extends React.Component {
                 text: 'Task 3'
             },
         ],
+        checkedTasks: []//new Set()
     }
 
     handleSubmit = (value) => {
@@ -42,25 +43,46 @@ class ToDo extends React.Component {
 
     handleDeleteTask = (_id) => {
         let tasks = [...this.state.tasks];
-        //example 1
-        // const idx = tasks.findIndex(task => task._id === _id);
-        // tasks.splice(idx, 1);
-
-        //example 2 
         tasks = tasks.filter(task => task._id !== _id);
-        
+
         this.setState({
             tasks
         });
 
     }
+    handleToggleCheckTask = (id) => {
+        let checkedTasks = [...this.state.checkedTasks];   //  new Set(this.state.checkedTasks)
+        if (!checkedTasks.includes(id)) {
+            checkedTasks.push(id);
+        } else {
+            checkedTasks = checkedTasks.filter(taskId => taskId !== id);
+        }
+        this.setState({
+            checkedTasks
+        });
+    }
+    handleDeleteCheckedTasks = () => {
+
+        const { checkedTasks } = this.state;
+        let tasks = [...this.state.tasks];
+        tasks = tasks.filter(task => !checkedTasks.includes(task._id));
+        this.setState({
+            tasks,
+            checkedTasks: []
+        });
+
+    }
     render() {
-        const tasksJSX = this.state.tasks.map(task => {
+        const { checkedTasks, tasks } = this.state;
+        const tasksJSX = tasks.map(task => {
             return (
                 <Col key={task._id} className="mt-3" xs={12} sm={6} md={4} lg={3}>
                     <Task
                         task={task}
                         handleDeleteTask={this.handleDeleteTask}
+                        handleToggleCheckTask={this.handleToggleCheckTask}
+                        isAnyTaskChecked={!!checkedTasks.length}
+                        isChecked={checkedTasks.includes(task._id)}
                     />
                 </Col>
             );
@@ -75,6 +97,7 @@ class ToDo extends React.Component {
                         <h1 className={styles.heading1}>ToDo Component</h1>
                         <AddTask
                             handleSubmit={this.handleSubmit}
+                            isAnyTaskChecked={!!checkedTasks.length}
                         />
                     </Col>
                 </Row>
@@ -83,6 +106,15 @@ class ToDo extends React.Component {
                     {tasksJSX.length ? tasksJSX : <p>There are no Tasks !</p>}
                 </Row>
 
+                <Row className="justify-content-center mt-5">
+                    <Button
+                        variant="danger"
+                        onClick={this.handleDeleteCheckedTasks}
+                        disabled={!!!checkedTasks.length}
+                    >
+                        Delete All Cheked
+                    </Button>
+                </Row>
             </Container>
         );
     }

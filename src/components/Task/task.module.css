@@ -1,3 +1,7 @@
 .task {
-    background-color: rgba(94, 15, 184, .5);
+    background-color: rgba(94, 15, 184, 1);
+}
+
+.checked {
+    background-color: rgba(94, 15, 184, .3);
 }
