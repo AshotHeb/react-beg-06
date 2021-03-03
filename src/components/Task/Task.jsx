@@ -13,7 +13,7 @@ const Task = ({
     const cls = [styles.task];
     if (isChecked)
         cls.push(styles.checked);
-
+    console.log("Task Render");
     return (
         <Card className={cls.join(' ')}>
             <input

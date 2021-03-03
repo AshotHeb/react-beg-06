@@ -26,7 +26,7 @@ class ToDo extends React.Component {
                 text: 'Task 3'
             },
         ],
-        checkedTasks: []//new Set()
+        checkedTasks: new Set()
     }
 
     handleSubmit = (value) => {
@@ -50,12 +50,12 @@ class ToDo extends React.Component {
         });
 
     }
-    handleToggleCheckTask = (id) => {
-        let checkedTasks = [...this.state.checkedTasks];   //  new Set(this.state.checkedTasks)
-        if (!checkedTasks.includes(id)) {
-            checkedTasks.push(id);
+    handleToggleCheckTask = (_id) => {
+        let checkedTasks = new Set(this.state.checkedTasks);
+        if (!checkedTasks.has(_id)) {
+            checkedTasks.add(_id);
         } else {
-            checkedTasks = checkedTasks.filter(taskId => taskId !== id);
+            checkedTasks.delete(_id);
         }
         this.setState({
             checkedTasks
@@ -65,10 +65,10 @@ class ToDo extends React.Component {
 
         const { checkedTasks } = this.state;
         let tasks = [...this.state.tasks];
-        tasks = tasks.filter(task => !checkedTasks.includes(task._id));
+        tasks = tasks.filter(task => !checkedTasks.has(task._id));
         this.setState({
             tasks,
-            checkedTasks: []
+            checkedTasks: new Set()
         });
 
     }
@@ -81,8 +81,8 @@ class ToDo extends React.Component {
                         task={task}
                         handleDeleteTask={this.handleDeleteTask}
                         handleToggleCheckTask={this.handleToggleCheckTask}
-                        isAnyTaskChecked={!!checkedTasks.length}
-                        isChecked={checkedTasks.includes(task._id)}
+                        isAnyTaskChecked={!!checkedTasks.size}
+                        isChecked={checkedTasks.has(task._id)}
                     />
                 </Col>
             );
@@ -97,7 +97,7 @@ class ToDo extends React.Component {
                         <h1 className={styles.heading1}>ToDo Component</h1>
                         <AddTask
                             handleSubmit={this.handleSubmit}
-                            isAnyTaskChecked={!!checkedTasks.length}
+                            isAnyTaskChecked={!!checkedTasks.size}
                         />
                     </Col>
                 </Row>
@@ -110,7 +110,7 @@ class ToDo extends React.Component {
                     <Button
                         variant="danger"
                         onClick={this.handleDeleteCheckedTasks}
-                        disabled={!!!checkedTasks.length}
+                        disabled={!!!checkedTasks.size}
                     >
                         Delete All Cheked
                     </Button>
