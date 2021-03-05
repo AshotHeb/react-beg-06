@@ -12,6 +12,12 @@ class LifeCycle extends React.PureComponent {
         }
 
     }
+    getSnapshotBeforeUpdate(prevProps ,prevState) {
+        console.log('getSnapshotBeforeUpdate' , prevState);
+        return {
+            x:5
+        }
+    }
     componentDidMount() {
         // const $heading1 = document.querySelector("#heading1");
         // setTimeout(() => {
@@ -25,8 +31,9 @@ class LifeCycle extends React.PureComponent {
         // },2000);
         // console.log("ComponentDidMount");
     }
-    componentDidUpdate(prevProps, prevState) {
-        // console.log('ComponentDidUpdate');
+    componentDidUpdate(prevProps, prevState ,snapshot) {
+        
+        console.log('ComponentDidUpdate' , snapshot);
         // console.log('prevState', prevState);
         // if ((this.state.count > this.state.limit) && this.state.access) {
         //     this.setState({

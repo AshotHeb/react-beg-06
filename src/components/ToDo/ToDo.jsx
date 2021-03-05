@@ -114,6 +114,13 @@ class ToDo extends React.Component {
                     >
                         Delete All Cheked
                     </Button>
+
+                    <Button  
+                        className="ml-5"
+                        variant="primary"
+                    >
+                        Check All
+                    </Button>
                 </Row>
             </Container>
         );

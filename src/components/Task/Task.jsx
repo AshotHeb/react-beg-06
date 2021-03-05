@@ -13,12 +13,13 @@ const Task = ({
     const cls = [styles.task];
     if (isChecked)
         cls.push(styles.checked);
-    console.log("Task Render");
+
     return (
         <Card className={cls.join(' ')}>
             <input
                 type="checkbox"
-                onClick={() => handleToggleCheckTask(task._id)}
+                onChange={() => handleToggleCheckTask(task._id)}
+                checked={isChecked}
             />
             <Card.Body>
                 <Card.Title style={{ color: 'white' }}>{task.text}</Card.Title>
