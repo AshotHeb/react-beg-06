@@ -4,7 +4,7 @@ import AddTask from '../AddTask/AddTask';
 import styles from './todo.module.css';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import idGenerator from '../../utils/idGenerator';
-
+import withScreenSizes from '../../hoc/withScreenSizes';
 const tasksWrapperRowCls = [
     "mt-5",
     "d-flex",
@@ -72,8 +72,23 @@ class ToDo extends React.Component {
         });
 
     }
+    toggleCheckAll = () => {
+        const { tasks } = this.state;
+        let checkedTasks = new Set(this.state.checkedTasks);
+        if (tasks.length === checkedTasks.size) {
+            checkedTasks.clear();
+        } else {
+            tasks.forEach(task => {
+                checkedTasks.add(task._id);
+            });
+        }
+        this.setState({
+            checkedTasks
+        });
+    }
     render() {
         const { checkedTasks, tasks } = this.state;
+        console.log("Todo Props", this.props);
         const tasksJSX = tasks.map(task => {
             return (
                 <Col key={task._id} className="mt-3" xs={12} sm={6} md={4} lg={3}>
@@ -115,11 +130,20 @@ class ToDo extends React.Component {
                         Delete All Cheked
                     </Button>
 
-                    <Button  
+                    <Button
                         className="ml-5"
                         variant="primary"
+                        onClick={this.toggleCheckAll}
                     >
-                        Check All
+                        {
+                            tasks.length === checkedTasks.size ? "Remove Selected" : "Check All"
+                            // (() => {
+                            //     if (tasks.length === checkedTasks.size)
+                            //         return "Remove Selected"
+                            //     else
+                            //         return "Check All"
+                            // })()
+                        }
                     </Button>
                 </Row>
             </Container>
@@ -127,5 +151,5 @@ class ToDo extends React.Component {
     }
 };
 
-export default ToDo;
+export default withScreenSizes(ToDo);
 

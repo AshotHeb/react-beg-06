@@ -2,18 +2,20 @@ import styles from './task.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { Card, Button } from 'react-bootstrap';
-
+import withScreenSizes from '../../hoc/withScreenSizes';
+import { memo } from 'react';
 const Task = ({
     task,
     handleDeleteTask,
     handleToggleCheckTask,
     isAnyTaskChecked,
-    isChecked
+    isChecked,
+    ...props
 }) => {
     const cls = [styles.task];
     if (isChecked)
         cls.push(styles.checked);
-
+    console.log("Task Props", props);
     return (
         <Card className={cls.join(' ')}>
             <input
@@ -42,4 +44,4 @@ const Task = ({
     );
 };
 
-export default Task;
+export default withScreenSizes(memo(Task));

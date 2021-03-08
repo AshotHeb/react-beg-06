@@ -1,8 +1,10 @@
 import './App.css';
 import React from 'react';
-// import ToDo from './components/ToDo/ToDo';
-import LifeCycle from './Demo/LifeCycle';
+import ToDo from './components/ToDo/ToDo';
+// import LifeCycle from './Demo/LifeCycle';
 // import ArrayJSX from './Demo/ArrayJSX';
+// import "./JS/functions";
+// import HOCContainer from './Demo/HOC';
 
 class App extends React.Component {
   state = {
@@ -17,9 +19,22 @@ class App extends React.Component {
     return (
       <div className="App">
         {/* <ArrayJSX /> */}
-        {/* <ToDo /> */}
+        <ToDo />
+        {/* <HOCContainer >
+           <p>Paragraph</p>
+           <span>Span</span> 
+        </HOCContainer>
 
-        {this.state.test && <LifeCycle />} 
+        <HOCContainer fluid>
+           <div>
+             <h2>Title</h2>
+             <p>
+               Lorem Lorem Lorem  
+             </p>
+           </div>
+        </HOCContainer> */}
+
+        {/* {this.state.test && <LifeCycle />}  */}
 
         {/* <div>
           <button onClick={this.handleTest}>{this.state.test ? 'True' : 'False'}</button>
