@@ -2,7 +2,9 @@ import styles from './task.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { Card, Button } from 'react-bootstrap';
-import withScreenSizes from '../../hoc/withScreenSizes';
+
+import PropTypes from 'prop-types';
+
 import { memo } from 'react';
 const Task = ({
     task,
@@ -15,7 +17,7 @@ const Task = ({
     const cls = [styles.task];
     if (isChecked)
         cls.push(styles.checked);
-    console.log("Task Props", props);
+
     return (
         <Card className={cls.join(' ')}>
             <input
@@ -24,7 +26,8 @@ const Task = ({
                 checked={isChecked}
             />
             <Card.Body>
-                <Card.Title style={{ color: 'white' }}>{task.text}</Card.Title>
+                <Card.Title style={{ color: 'white' }}>Title : {task.title}</Card.Title>
+                <Card.Text style={{ color: 'white' ,marginBottom:"30px"}}>Description :{task.description}</Card.Text>
                 <Button
                     variant="danger"
                     onClick={() => handleDeleteTask(task._id)}
@@ -44,4 +47,16 @@ const Task = ({
     );
 };
 
-export default withScreenSizes(memo(Task));
+Task.propTypes = {
+    task: PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        title: PropTypes.string.isRequired,
+        description: PropTypes.string.isRequired
+    }),
+    handleDeleteTask: PropTypes.func.isRequired,
+    handleToggleCheckTask: PropTypes.func.isRequired,
+    isAnyTaskChecked: PropTypes.bool.isRequired,
+    isChecked: PropTypes.bool.isRequired
+
+}
+export default memo(Task);
