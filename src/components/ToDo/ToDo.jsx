@@ -1,9 +1,12 @@
 import React from 'react';
 import Task from '../Task/Task';
+import Confirm from '../Confirm/Confirm';
+import EditTaskModal from '../EditTaskModal/EditTaskModal';
+import AddTaskModal from '../AddTaskModal/AddTaskModal';
 // import styles from './todo.module.css';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import idGenerator from '../../utils/idGenerator';
-import AddTaskModal from '../AddTaskModal';
+
 const tasksWrapperRowCls = [
     "mt-5",
     "d-flex",
@@ -29,9 +32,15 @@ class ToDo extends React.Component {
             },
         ],
         checkedTasks: new Set(),
-        isOpenAddTaskModal: false
+        isOpenAddTaskModal: false,
+        isOpenConfirm: false,
+        editableTask: null
     }
-
+    toggleOpenConfirm = () => {
+        this.setState({
+            isOpenConfirm: !this.state.isOpenConfirm
+        });
+    }
     toggleOpenAddTaskModal = () => {
         this.setState({
             isOpenAddTaskModal: !this.state.isOpenAddTaskModal
@@ -94,11 +103,42 @@ class ToDo extends React.Component {
             checkedTasks
         });
     }
+    getSingleTaskFromCheckedTasks = () => {
+        if (this.state.checkedTasks.size !== 1)
+            return;
+        let id = null;
+        this.state.checkedTasks.forEach(_id => {
+            id = _id;
+        });
+        return this.state.tasks.find(task => task._id === id);
+
+    }
+    setEditableTask = (editableTask) => {
+        this.setState({
+            editableTask
+        });
+    }
+    removeEditableTask = () => {
+        this.setState({
+            editableTask: null
+        });
+    }
+    handleEditTask = (editableTask) => {
+        const tasks = [...this.state.tasks];
+        const idx = tasks.findIndex(task => task._id === editableTask._id);
+        tasks[idx] = editableTask;
+        this.setState({
+            tasks
+        });
+
+    }
     render() {
         const {
             checkedTasks,
             tasks,
-            isOpenAddTaskModal
+            isOpenAddTaskModal,
+            isOpenConfirm,
+            editableTask,
         } = this.state;
         const tasksJSX = tasks.map(task => {
             return (
@@ -109,6 +149,7 @@ class ToDo extends React.Component {
                         handleToggleCheckTask={this.handleToggleCheckTask}
                         isAnyTaskChecked={!!checkedTasks.size}
                         isChecked={checkedTasks.has(task._id)}
+                        setEditableTask={this.setEditableTask}
                     />
                 </Col>
             );
@@ -123,6 +164,7 @@ class ToDo extends React.Component {
                         <Col>
                             <Button
                                 onClick={this.toggleOpenAddTaskModal}
+                                disabled={!!checkedTasks.size}
                             >
                                 Add Task Modal
                             </Button>
@@ -136,7 +178,7 @@ class ToDo extends React.Component {
                     <Row className="justify-content-center mt-5">
                         <Button
                             variant="danger"
-                            onClick={this.handleDeleteCheckedTasks}
+                            onClick={this.toggleOpenConfirm}
                             disabled={!!!checkedTasks.size}
                         >
                             Delete All Cheked
@@ -158,7 +200,24 @@ class ToDo extends React.Component {
                     onHide={this.toggleOpenAddTaskModal}
                     onSubmit={this.handleSubmit}
                     isAnyTaskChecked={!!checkedTasks.size}
-                />}
+                />
+                }
+
+                {
+                    isOpenConfirm && <Confirm
+                        onHide={this.toggleOpenConfirm}
+                        onSubmit={this.handleDeleteCheckedTasks}
+                        countOrOneTaskTitle={checkedTasks.size > 1 ? checkedTasks.size : this.getSingleTaskFromCheckedTasks().title}
+                    />
+                }
+
+                {
+                    editableTask && <EditTaskModal
+                        onHide={this.removeEditableTask}
+                        editableTask={editableTask}
+                        onSubmit={this.handleEditTask}
+                    />
+                }
             </>
         );
     }

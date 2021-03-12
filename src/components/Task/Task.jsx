@@ -12,6 +12,7 @@ const Task = ({
     handleToggleCheckTask,
     isAnyTaskChecked,
     isChecked,
+    setEditableTask,
     ...props
 }) => {
     const cls = [styles.task];
@@ -27,7 +28,7 @@ const Task = ({
             />
             <Card.Body>
                 <Card.Title style={{ color: 'white' }}>Title : {task.title}</Card.Title>
-                <Card.Text style={{ color: 'white' ,marginBottom:"30px"}}>Description :{task.description}</Card.Text>
+                <Card.Text style={{ color: 'white', marginBottom: "30px" }}>Description :{task.description}</Card.Text>
                 <Button
                     variant="danger"
                     onClick={() => handleDeleteTask(task._id)}
@@ -39,6 +40,7 @@ const Task = ({
                     variant="warning"
                     className="ml-3"
                     disabled={isAnyTaskChecked}
+                    onClick={() => setEditableTask(task)}
                 >
                     <FontAwesomeIcon icon={faEdit} />
                 </Button>
