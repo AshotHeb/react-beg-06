@@ -1,8 +1,7 @@
 import React from 'react';
 import Task from '../Task/Task';
 import Confirm from '../Confirm/Confirm';
-import EditTaskModal from '../EditTaskModal/EditTaskModal';
-import AddTaskModal from '../AddTaskModal/AddTaskModal';
+import TaskModal from '../TaskModal/TaskModal';
 // import styles from './todo.module.css';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import idGenerator from '../../utils/idGenerator';
@@ -46,7 +45,7 @@ class ToDo extends React.Component {
             isOpenAddTaskModal: !this.state.isOpenAddTaskModal
         });
     }
-    handleSubmit = (formData) => {
+    handleAddTask = (formData) => {
         const tasks = [...this.state.tasks];
         tasks.push({
             ...formData,
@@ -113,14 +112,19 @@ class ToDo extends React.Component {
         return this.state.tasks.find(task => task._id === id);
 
     }
-    setEditableTask = (editableTask) => {
+    // setEditableTask = (editableTask) => {
+    //     this.setState({
+    //         editableTask
+    //     });
+    // }
+    // removeEditableTask = () => {
+    //     this.setState({
+    //         editableTask: null
+    //     });
+    // }
+    toggleSetEditableTask = (editableTask = null) => {
         this.setState({
             editableTask
-        });
-    }
-    removeEditableTask = () => {
-        this.setState({
-            editableTask: null
         });
     }
     handleEditTask = (editableTask) => {
@@ -149,7 +153,7 @@ class ToDo extends React.Component {
                         handleToggleCheckTask={this.handleToggleCheckTask}
                         isAnyTaskChecked={!!checkedTasks.size}
                         isChecked={checkedTasks.has(task._id)}
-                        setEditableTask={this.setEditableTask}
+                        setEditableTask={this.toggleSetEditableTask}
                     />
                 </Col>
             );
@@ -176,32 +180,29 @@ class ToDo extends React.Component {
                     </Row>
 
                     <Row className="justify-content-center mt-5">
-                        <Button
-                            variant="danger"
-                            onClick={this.toggleOpenConfirm}
-                            disabled={!!!checkedTasks.size}
-                        >
-                            Delete All Cheked
+                        {
+                            !!tasks.length && <>
+                                <Button
+                                    variant="danger"
+                                    onClick={this.toggleOpenConfirm}
+                                    disabled={!!!checkedTasks.size}
+                                >
+                                    Delete All Cheked
                     </Button>
-
-                        <Button
-                            className="ml-5"
-                            variant="primary"
-                            onClick={this.toggleCheckAll}
-                        >
-                            {
-                                tasks.length === checkedTasks.size ? "Remove Selected" : "Check All"
-                            }
-                        </Button>
+                                <Button
+                                    className="ml-5"
+                                    variant="primary"
+                                    onClick={this.toggleCheckAll}
+                                    disabled={!!!tasks.length}
+                                >
+                                    {
+                                        checkedTasks.size && tasks.length === checkedTasks.size ? "Remove Selected" : "Check All"
+                                    }
+                                </Button>
+                            </>
+                        }
                     </Row>
                 </Container>
-
-                {  isOpenAddTaskModal && <AddTaskModal
-                    onHide={this.toggleOpenAddTaskModal}
-                    onSubmit={this.handleSubmit}
-                    isAnyTaskChecked={!!checkedTasks.size}
-                />
-                }
 
                 {
                     isOpenConfirm && <Confirm
@@ -212,10 +213,17 @@ class ToDo extends React.Component {
                 }
 
                 {
-                    editableTask && <EditTaskModal
-                        onHide={this.removeEditableTask}
-                        editableTask={editableTask}
+                    isOpenAddTaskModal && <TaskModal
+                        onHide={this.toggleOpenAddTaskModal}
+                        onSubmit={this.handleAddTask}
+                    />
+                }
+
+                {
+                    editableTask && <TaskModal
+                        onHide={this.toggleSetEditableTask}
                         onSubmit={this.handleEditTask}
+                        editableTask={editableTask}
                     />
                 }
             </>

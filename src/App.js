@@ -1,6 +1,7 @@
 import './App.css';
 import React from 'react';
 import ToDo from './components/ToDo/ToDo';
+// import './JS/async';
 
 class App extends React.Component {
   state = {
@@ -13,8 +14,8 @@ class App extends React.Component {
   }
   render() {
     return (
-      <div className="App">   
-        <ToDo />
+      <div className="App">
+        {/* <ToDo /> */}
       </div>
     );
   }
