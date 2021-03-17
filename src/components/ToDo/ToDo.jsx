@@ -4,8 +4,9 @@ import Confirm from '../Confirm/Confirm';
 import TaskModal from '../TaskModal/TaskModal';
 // import styles from './todo.module.css';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import idGenerator from '../../utils/idGenerator';
 
+
+const API_HOST = "http://localhost:3001";
 const tasksWrapperRowCls = [
     "mt-5",
     "d-flex",
@@ -13,23 +14,7 @@ const tasksWrapperRowCls = [
 ];
 class ToDo extends React.Component {
     state = {
-        tasks: [
-            {
-                _id: idGenerator(),
-                title: 'Task 1 ',
-                description: "Task 1"
-            },
-            {
-                _id: idGenerator(),
-                title: 'Task 2 ',
-                description: "Task 2"
-            },
-            {
-                _id: idGenerator(),
-                title: 'Task 3',
-                description: "Task 3"
-            },
-        ],
+        tasks: [],
         checkedTasks: new Set(),
         isOpenAddTaskModal: false,
         isOpenConfirm: false,
@@ -46,14 +31,28 @@ class ToDo extends React.Component {
         });
     }
     handleAddTask = (formData) => {
-        const tasks = [...this.state.tasks];
-        tasks.push({
-            ...formData,
-            _id: idGenerator()
-        });
-        this.setState({
-            tasks
-        });
+        fetch(`${API_HOST}/task`, {
+            method: "POST",
+            body: JSON.stringify(formData),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                //data.error
+                if (data.error)
+                    throw data.error;
+                // const tasks = [...this.state.tasks];
+                // tasks.push(data);
+                // this.setState({
+                //     tasks
+                // });
+            })
+            .catch(error => {
+                console.log("Add Task Error", error);
+            })
+
 
     }
 
@@ -78,14 +77,28 @@ class ToDo extends React.Component {
         });
     }
     handleDeleteCheckedTasks = () => {
-
         const { checkedTasks } = this.state;
-        let tasks = [...this.state.tasks];
-        tasks = tasks.filter(task => !checkedTasks.has(task._id));
-        this.setState({
-            tasks,
-            checkedTasks: new Set()
-        });
+        fetch(`${API_HOST}/task`, {
+            method: "PATCH",
+            body: JSON.stringify({ tasks: Array.from(checkedTasks) }),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error)
+                    throw data.error;
+                let tasks = [...this.state.tasks];
+                tasks = tasks.filter(task => !checkedTasks.has(task._id));
+                this.setState({
+                    tasks,
+                    checkedTasks: new Set()
+                });
+            })
+            .catch(error => {
+                console.log("Delete Batch of Tasks Error", error);
+            });
 
     }
     toggleCheckAll = () => {
@@ -112,16 +125,7 @@ class ToDo extends React.Component {
         return this.state.tasks.find(task => task._id === id);
 
     }
-    // setEditableTask = (editableTask) => {
-    //     this.setState({
-    //         editableTask
-    //     });
-    // }
-    // removeEditableTask = () => {
-    //     this.setState({
-    //         editableTask: null
-    //     });
-    // }
+
     toggleSetEditableTask = (editableTask = null) => {
         this.setState({
             editableTask
@@ -135,6 +139,21 @@ class ToDo extends React.Component {
             tasks
         });
 
+    }
+
+    componentDidMount() {
+        fetch(`${API_HOST}/task`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.error)
+                    throw data.error;
+                this.setState({
+                    tasks: data
+                });
+            })
+            .catch(error => {
+                console.log("Get All Tasks ", error);
+            });
     }
     render() {
         const {

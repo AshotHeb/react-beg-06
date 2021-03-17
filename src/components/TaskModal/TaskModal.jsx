@@ -1,6 +1,7 @@
 import React, { createRef } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-
+import DatePicker from "react-datepicker";
+import formatDate from '../../utils/dateFormatter';
 class TaskModal extends React.Component {
     constructor(props) {
         super(props);
@@ -8,8 +9,15 @@ class TaskModal extends React.Component {
         this.state = {
             title: "",
             description: "",
+            //2020-03-14
+            date: new Date(),
             ...props.editableTask
         }
+    }
+    setDate = (date) => {
+        this.setState({
+            date
+        });
     }
     handleChange = (event) => {
         const { name, value } = event.target;
@@ -24,7 +32,11 @@ class TaskModal extends React.Component {
             (type === 'keypress' && key !== 'Enter')
         )
             return;
-        this.props.onSubmit(this.state);
+        const formData = {
+            ...this.state,
+            date: formatDate(this.state.date)
+        }
+        this.props.onSubmit(formData);
         this.props.onHide();
     }
     componentDidMount() {
@@ -32,7 +44,7 @@ class TaskModal extends React.Component {
     }
     render() {
         const { onHide, editableTask } = this.props;
-        const { title, description } = this.state;
+        const { title, description, date } = this.state;
         return (
             <Modal
                 show={true}
@@ -69,6 +81,12 @@ class TaskModal extends React.Component {
                                 placeholder="Description"
                                 onChange={this.handleChange}
                                 value={description}
+                            />
+                        </Form.Group>
+                        <Form.Group >
+                            <DatePicker
+                                selected={date}
+                                onChange={date => this.setDate(date)}
                             />
                         </Form.Group>
                     </Form>

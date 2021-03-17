@@ -15,7 +15,7 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        {/* <ToDo /> */}
+        <ToDo />
       </div>
     );
   }
