@@ -10,8 +10,8 @@ class TaskModal extends React.Component {
             title: "",
             description: "",
             //2020-03-14
-            date: new Date(),
-            ...props.editableTask
+            ...props.editableTask,
+            date: props.editableTask ? new Date(props.editableTask.date) : new Date()
         }
     }
     setDate = (date) => {

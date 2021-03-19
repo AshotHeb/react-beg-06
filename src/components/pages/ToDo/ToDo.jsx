@@ -1,7 +1,7 @@
 import React from 'react';
-import Task from '../Task/Task';
-import Confirm from '../Confirm/Confirm';
-import TaskModal from '../TaskModal/TaskModal';
+import Task from '../../Task/Task';
+import Confirm from '../../Confirm/Confirm';
+import TaskModal from '../../TaskModal/TaskModal';
 // import styles from './todo.module.css';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 
@@ -43,11 +43,11 @@ class ToDo extends React.Component {
                 //data.error
                 if (data.error)
                     throw data.error;
-                // const tasks = [...this.state.tasks];
-                // tasks.push(data);
-                // this.setState({
-                //     tasks
-                // });
+                const tasks = [...this.state.tasks];
+                tasks.push(data);
+                this.setState({
+                    tasks
+                });
             })
             .catch(error => {
                 console.log("Add Task Error", error);
@@ -57,12 +57,26 @@ class ToDo extends React.Component {
     }
 
     handleDeleteTask = (_id) => {
-        let tasks = [...this.state.tasks];
-        tasks = tasks.filter(task => task._id !== _id);
+        // API_HOST/task/:taskId
+        (async () => {
+            try {
+                const response = await fetch(`${API_HOST}/task/${_id}`, {
+                    method: "DELETE"
+                });
+                const data = await response.json();
 
-        this.setState({
-            tasks
-        });
+                if (data.error) throw data.error;
+
+                let tasks = [...this.state.tasks];
+                tasks = tasks.filter(task => task._id !== _id);
+                this.setState({
+                    tasks
+                });
+            } catch (error) {
+                console.log("Delete One Task Request Error", error);
+            }
+        })();
+
 
     }
     handleToggleCheckTask = (_id) => {
@@ -132,12 +146,29 @@ class ToDo extends React.Component {
         });
     }
     handleEditTask = (editableTask) => {
-        const tasks = [...this.state.tasks];
-        const idx = tasks.findIndex(task => task._id === editableTask._id);
-        tasks[idx] = editableTask;
-        this.setState({
-            tasks
-        });
+
+        (async () => {
+            const { _id } = editableTask;
+            const response = await fetch(`${API_HOST}/task/${_id}`, {
+                method: "PUT",
+                body: JSON.stringify(editableTask),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            const data = await response.json();
+            const tasks = [...this.state.tasks];
+            const idx = tasks.findIndex(task => task._id === data._id);
+            tasks[idx] = data;
+            this.setState({
+                tasks
+            });
+
+        })()
+
+
+
+
 
     }
 
