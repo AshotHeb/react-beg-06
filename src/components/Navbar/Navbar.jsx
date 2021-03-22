@@ -2,42 +2,40 @@ import { Nav } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import styles from './navbar.module.css';
 
+const navItems = [
+    {
+        to: "/",
+        value: "Home"
+    },
+    {
+        to: "/contact",
+        value: "Contact"
+    },
+    {
+        to: "/about",
+        value: "About"
+    },
+];
+
 const Navbar = () => {
-    return (
-        <Nav>
-            <Nav.Item>
+    const navItemsJSX = navItems.map((navItem, index) => {
+        return (
+            <Nav.Item key={index}>
                 <NavLink
-                    to="/"
+                    to={navItem.to}
                     className="nav-link"
-                    // activeStyle={{ color: "red" }}
                     activeClassName={styles.activeNavLink}
                     exact={true}
                 >
-                    Home
-                    </NavLink>
-            </Nav.Item>
-            <Nav.Item>
-                <NavLink
-                    to="/contact"
-                    // activeStyle={{ color: "red" }}
-                    className="nav-link"
-                    exact={true}
-                    activeClassName={styles.activeNavLink}
-                >
-                    Contact
+                    {navItem.value}
                 </NavLink>
             </Nav.Item>
-            <Nav.Item>
-                <NavLink
-                    to="/about"
-                    className="nav-link"
-                    // activeStyle={{ color: "red" }}
-                    activeClassName={styles.activeNavLink}
-                    exact={true}
-                >
-                    About
-                    </NavLink>
-            </Nav.Item>
+        );
+    });
+
+    return (
+        <Nav>
+            {navItemsJSX}
         </Nav>
     );
 }

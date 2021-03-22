@@ -5,8 +5,38 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import ToDo from './components/pages/ToDo/ToDo';
 import Contact from './components/pages/Contact/Contact';
 import About from './components/pages/About/About';
+import NotFound from './components/pages/NotFound/NotFound';
+import SingleTask from './components/pages/SingleTask/SingleTask';
 // import './JS/async';
 import Navbar from './components/Navbar/Navbar';
+
+const pages = [
+  {
+    path: "/",
+    component: ToDo,
+    exact: true
+  },
+  {
+    path: "/contact",
+    component: Contact,
+    exact: true
+  },
+  {
+    path: "/about",
+    component: About,
+    exact: true
+  },
+  {
+    path: "/task/:id",
+    component: SingleTask,
+    exact: true
+  },
+  {
+    path: "/404",
+    component: NotFound,
+    exact: true
+  }
+];
 
 class App extends React.Component {
   state = {
@@ -18,41 +48,24 @@ class App extends React.Component {
     });
   }
   render() {
+    const pagesJSX = pages.map((page, index) => {
+      return (
+        <Route
+          key={index}
+          path={page.path}
+          component={page.component}
+          exact={page.exact}
+        />
+      );
+    });
     return (
       <div className="App">
         <Navbar />
-        {/* Pages */}
-        {/* Example 1 */}
+
         <Switch>
-          <Route path="/" component={ToDo} exact />
-          <Route path="/contact" component={Contact} exact />
-          <Route path="/about" component={About} exact />
-          <Redirect to="/" />
+          {pagesJSX}
+          <Redirect to="/404" />
         </Switch>
-
-
-
-        {/* Example 2 */}
-
-        {/* <Route path="/" render={()=> <ToDo test={this.state.test}/>} exact />
-        <Route path="/contact" render={()=><Contact />} exact />
-        <Route path="/about" render={()=> <About />} exact />  */}
-
-
-        {/* Example 3 */}
-        {/* <Route path="/" exact>
-          <ToDo />
-        </Route>
-
-        <Route path="/contact" exact>
-          <Contact />
-        </Route>
-
-        <Route path="/about" exact>
-          <About />
-        </Route> */}
-
-
       </div>
     );
   }

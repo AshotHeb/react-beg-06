@@ -2,8 +2,9 @@ import styles from './task.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { Card, Button } from 'react-bootstrap';
-
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 import { memo } from 'react';
 const Task = ({
@@ -18,6 +19,7 @@ const Task = ({
     const cls = [styles.task];
     if (isChecked)
         cls.push(styles.checked);
+  
 
     return (
         <Card className={cls.join(' ')}>
@@ -27,7 +29,9 @@ const Task = ({
                 checked={isChecked}
             />
             <Card.Body>
-                <Card.Title style={{ color: 'white' }}>Title : {task.title}</Card.Title>
+                <Card.Title style={{ color: 'white' }}>
+                    <Link to={`/task/${task._id}`}> Title : {task.title}</Link>
+                </Card.Title>
                 <Card.Text style={{ color: 'white', marginBottom: "30px" }}>Description :{task.description}</Card.Text>
                 <Card.Text style={{ color: 'white', marginBottom: "30px" }}>Date :{task.date.slice(0, 10)}</Card.Text>
                 <Button
@@ -62,4 +66,4 @@ Task.propTypes = {
     isChecked: PropTypes.bool.isRequired
 
 }
-export default memo(Task);
+export default withRouter(memo(Task));

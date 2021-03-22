@@ -187,6 +187,7 @@ class ToDo extends React.Component {
             });
     }
     render() {
+        console.log("Todo Props" , this.props);
         const {
             checkedTasks,
             tasks,
