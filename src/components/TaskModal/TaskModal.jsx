@@ -2,6 +2,8 @@ import React, { createRef } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import DatePicker from "react-datepicker";
 import formatDate from '../../utils/dateFormatter';
+import PropTypes from 'prop-types';
+
 class TaskModal extends React.Component {
     constructor(props) {
         super(props);
@@ -37,7 +39,6 @@ class TaskModal extends React.Component {
             date: formatDate(this.state.date)
         }
         this.props.onSubmit(formData);
-        this.props.onHide();
     }
     componentDidMount() {
         this.inputRef.current.focus();
@@ -104,5 +105,9 @@ class TaskModal extends React.Component {
         );
     }
 }
-
+TaskModal.propTypes = {
+    onHide: PropTypes.func.isRequired,
+    editableTask: PropTypes.object,
+    onSubmit: PropTypes.func.isRequired
+}
 export default TaskModal;

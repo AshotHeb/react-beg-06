@@ -9,6 +9,7 @@ import NotFound from './components/pages/NotFound/NotFound';
 import SingleTask from './components/pages/SingleTask/SingleTask';
 // import './JS/async';
 import Navbar from './components/Navbar/Navbar';
+// import A from './Demo/A';
 
 const pages = [
   {
@@ -64,6 +65,12 @@ class App extends React.Component {
 
         <Switch>
           {pagesJSX}
+          {/* <Route path="/test" component={A} /> */}
+          {/* <Route path="/test" render={(props) => <A {...props} />} /> */}
+          {/* <Route path="/test" >
+            <A />
+          </Route > */}
+
           <Redirect to="/404" />
         </Switch>
       </div>

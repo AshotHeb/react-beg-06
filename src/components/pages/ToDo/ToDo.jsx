@@ -2,6 +2,7 @@ import React from 'react';
 import Task from '../../Task/Task';
 import Confirm from '../../Confirm/Confirm';
 import TaskModal from '../../TaskModal/TaskModal';
+import Spinner from '../../Spinner/Spinner';
 // import styles from './todo.module.css';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 
@@ -18,7 +19,8 @@ class ToDo extends React.Component {
         checkedTasks: new Set(),
         isOpenAddTaskModal: false,
         isOpenConfirm: false,
-        editableTask: null
+        editableTask: null,
+        loading: false
     }
     toggleOpenConfirm = () => {
         this.setState({
@@ -31,6 +33,7 @@ class ToDo extends React.Component {
         });
     }
     handleAddTask = (formData) => {
+        this.setState({ loading: true });
         fetch(`${API_HOST}/task`, {
             method: "POST",
             body: JSON.stringify(formData),
@@ -46,12 +49,16 @@ class ToDo extends React.Component {
                 const tasks = [...this.state.tasks];
                 tasks.push(data);
                 this.setState({
-                    tasks
+                    tasks,
+                    isOpenAddTaskModal:false
                 });
             })
             .catch(error => {
                 console.log("Add Task Error", error);
             })
+            .finally(() => {
+                this.setState({ loading: false });
+            });
 
 
     }
@@ -148,21 +155,31 @@ class ToDo extends React.Component {
     handleEditTask = (editableTask) => {
 
         (async () => {
-            const { _id } = editableTask;
-            const response = await fetch(`${API_HOST}/task/${_id}`, {
-                method: "PUT",
-                body: JSON.stringify(editableTask),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
-            const data = await response.json();
-            const tasks = [...this.state.tasks];
-            const idx = tasks.findIndex(task => task._id === data._id);
-            tasks[idx] = data;
-            this.setState({
-                tasks
-            });
+            this.setState({ loading: true });
+            try {
+                const { _id } = editableTask;
+                const response = await fetch(`${API_HOST}/task/${_id}`, {
+                    method: "PUT",
+                    body: JSON.stringify(editableTask),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+                const data = await response.json();
+                if (data.error) throw data.error;
+                const tasks = [...this.state.tasks];
+                const idx = tasks.findIndex(task => task._id === data._id);
+                tasks[idx] = data;
+                this.setState({
+                    tasks,
+                    editableTask: null
+                });
+            } catch (error) {
+                console.log("Edit Task Request Error", error);
+            }
+            finally {
+                this.setState({ loading: false });
+            }
 
         })()
 
@@ -187,13 +204,14 @@ class ToDo extends React.Component {
             });
     }
     render() {
-        console.log("Todo Props" , this.props);
+
         const {
             checkedTasks,
             tasks,
             isOpenAddTaskModal,
             isOpenConfirm,
             editableTask,
+            loading
         } = this.state;
         const tasksJSX = tasks.map(task => {
             return (
@@ -276,6 +294,9 @@ class ToDo extends React.Component {
                         onSubmit={this.handleEditTask}
                         editableTask={editableTask}
                     />
+                }
+                {
+                    loading && <Spinner />
                 }
             </>
         );

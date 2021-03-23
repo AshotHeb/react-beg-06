@@ -20,7 +20,6 @@ const Task = ({
     if (isChecked)
         cls.push(styles.checked);
   
-
     return (
         <Card className={cls.join(' ')}>
             <input
@@ -66,4 +65,4 @@ Task.propTypes = {
     isChecked: PropTypes.bool.isRequired
 
 }
-export default withRouter(memo(Task));
+export default withRouter( memo(Task) );
