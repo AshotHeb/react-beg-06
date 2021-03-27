@@ -20,7 +20,8 @@ class ToDo extends React.Component {
         isOpenAddTaskModal: false,
         isOpenConfirm: false,
         editableTask: null,
-        loading: false
+        loading: false,
+        deleteTaskId: null
     }
     toggleOpenConfirm = () => {
         this.setState({
@@ -50,7 +51,7 @@ class ToDo extends React.Component {
                 tasks.push(data);
                 this.setState({
                     tasks,
-                    isOpenAddTaskModal:false
+                    isOpenAddTaskModal: false
                 });
             })
             .catch(error => {
@@ -64,7 +65,7 @@ class ToDo extends React.Component {
     }
 
     handleDeleteTask = (_id) => {
-        // API_HOST/task/:taskId
+        this.setState({ deleteTaskId: _id });   //loading Started
         (async () => {
             try {
                 const response = await fetch(`${API_HOST}/task/${_id}`, {
@@ -82,6 +83,9 @@ class ToDo extends React.Component {
             } catch (error) {
                 console.log("Delete One Task Request Error", error);
             }
+            finally {
+                this.setState({ deleteTaskId: null });   //Loading Ended
+            }
         })();
 
 
@@ -98,6 +102,7 @@ class ToDo extends React.Component {
         });
     }
     handleDeleteCheckedTasks = () => {
+        this.setState({ loading: true });   //Loading Started
         const { checkedTasks } = this.state;
         fetch(`${API_HOST}/task`, {
             method: "PATCH",
@@ -119,7 +124,10 @@ class ToDo extends React.Component {
             })
             .catch(error => {
                 console.log("Delete Batch of Tasks Error", error);
-            });
+            })
+            .finally(() => {
+                this.setState({ loading: false });  //Loading Ended
+            })
 
     }
     toggleCheckAll = () => {
@@ -153,9 +161,8 @@ class ToDo extends React.Component {
         });
     }
     handleEditTask = (editableTask) => {
-
+        this.setState({ loading: true });         //Loading Started
         (async () => {
-            this.setState({ loading: true });
             try {
                 const { _id } = editableTask;
                 const response = await fetch(`${API_HOST}/task/${_id}`, {
@@ -178,7 +185,7 @@ class ToDo extends React.Component {
                 console.log("Edit Task Request Error", error);
             }
             finally {
-                this.setState({ loading: false });
+                this.setState({ loading: false });  //Loading Ended
             }
 
         })()
@@ -190,6 +197,7 @@ class ToDo extends React.Component {
     }
 
     componentDidMount() {
+        this.setState({ loading: true });
         fetch(`${API_HOST}/task`)
             .then(res => res.json())
             .then(data => {
@@ -198,9 +206,13 @@ class ToDo extends React.Component {
                 this.setState({
                     tasks: data
                 });
+
             })
             .catch(error => {
                 console.log("Get All Tasks ", error);
+            })
+            .finally(() => {
+                this.setState({ loading: false });
             });
     }
     render() {
@@ -211,7 +223,8 @@ class ToDo extends React.Component {
             isOpenAddTaskModal,
             isOpenConfirm,
             editableTask,
-            loading
+            loading,
+            deleteTaskId
         } = this.state;
         const tasksJSX = tasks.map(task => {
             return (
@@ -223,6 +236,7 @@ class ToDo extends React.Component {
                         isAnyTaskChecked={!!checkedTasks.size}
                         isChecked={checkedTasks.has(task._id)}
                         setEditableTask={this.toggleSetEditableTask}
+                        isLoadingForDelete={deleteTaskId === task._id}
                     />
                 </Col>
             );

@@ -14,12 +14,16 @@ const Task = ({
     isAnyTaskChecked,
     isChecked,
     setEditableTask,
+    isLoadingForDelete,
     ...props
 }) => {
     const cls = [styles.task];
     if (isChecked)
         cls.push(styles.checked);
-  
+    
+     if(isLoadingForDelete)  {
+         return <p>Loading ...</p>
+     }  
     return (
         <Card className={cls.join(' ')}>
             <input

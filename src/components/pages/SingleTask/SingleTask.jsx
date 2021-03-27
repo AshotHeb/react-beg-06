@@ -4,13 +4,16 @@ import { Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
 import TaskModal from '../../TaskModal/TaskModal';
+import { Link } from 'react-router-dom';
+import Spinner from '../../Spinner/Spinner';
 
 const API_HOST = "http://localhost:3001";
 
 class SingleTask extends React.Component {
     state = {
         singleTask: null,
-        isEditModal: false
+        isEditModal: false,
+        loading: false
     }
     toggleEditModal = () => {
         this.setState({
@@ -18,6 +21,7 @@ class SingleTask extends React.Component {
         });
     }
     handleEditTask = (editTask) => {
+        this.setState({ loading: true }) //Loading Started
         fetch(`${API_HOST}/task/${editTask._id}`, {
             method: "PUT",
             body: JSON.stringify(editTask),
@@ -30,14 +34,18 @@ class SingleTask extends React.Component {
                 if (data.error) throw data.error;
                 this.setState({
                     singleTask: data,
-                    isEditModal:false
+                    isEditModal: false
                 });
             })
             .catch(error => {
                 console.log("SingleTask ,Edit Task Request Error", error);
             })
+            .finally(() => {
+                this.setState({ loading: false }) //Loading Ended
+            });
     }
     handleDeleteTask = () => {
+        this.setState({ loading: true });
         const { _id } = this.state.singleTask;
         fetch(`${API_HOST}/task/${_id}`, {
             method: "DELETE"
@@ -45,15 +53,17 @@ class SingleTask extends React.Component {
             .then(res => res.json())
             .then(data => {
                 if (data.error) throw data.error;
-                console.log("this.props", this.props);
                 this.props.history.push("/");
             })
             .catch(error => {
+                this.setState({ loading: false });
                 console.log("SingleTask ,Delete Task Request Error", error);
             });
+
     }
 
     componentDidMount() {
+
         const { id } = this.props.match.params;
         fetch(`${API_HOST}/task/${id}`)
             .then(res => res.json())
@@ -67,12 +77,13 @@ class SingleTask extends React.Component {
             .catch(error => {
                 this.props.history.push("/404");
                 console.log("Single Task Get Request ", error);
-            });
+            })
+
     }
     render() {
 
-        const { singleTask, isEditModal } = this.state;
-        if (!singleTask) return <p>Loading...</p>
+        const { singleTask, isEditModal, loading } = this.state;
+        if (!singleTask || loading) return <Spinner />
         return (
             <>
                 <div>
@@ -85,6 +96,7 @@ class SingleTask extends React.Component {
                             Description : {singleTask.description}
                         </p>
                         <div>
+                            <Link to="/">Home</Link>
                             <Button
                                 variant="danger"
                                 onClick={this.handleDeleteTask}
@@ -108,6 +120,9 @@ class SingleTask extends React.Component {
                         onSubmit={this.handleEditTask}
                         editableTask={singleTask}
                     />
+                }
+                {
+                    loading && <Spinner />
                 }
             </>
         );
