@@ -75,9 +75,9 @@ class SingleTask extends React.Component {
                 });
             })
             .catch(error => {
-                this.props.history.push("/404");
                 console.log("Single Task Get Request ", error);
-            })
+                this.props.history.push(`/error/${error.status}`, error.message);
+            });
 
     }
     render() {

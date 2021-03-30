@@ -32,7 +32,7 @@ const pages = [
     exact: true
   },
   {
-    path: "/404",
+    path: "/error/:status",
     component: NotFound,
     exact: true
   }
@@ -64,7 +64,7 @@ class App extends React.Component {
 
         <Switch>
           {pagesJSX}
-          <Redirect to="/404" />
+          <Redirect to="/error/404" />
         </Switch>
       </div>
     );
