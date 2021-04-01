@@ -21,8 +21,10 @@ class ToDo extends React.Component {
         isOpenConfirm: false,
         editableTask: null,
         loading: false,
-        deleteTaskId: null
+        deleteTaskId: null,
+        counter:0
     }
+   
     toggleOpenConfirm = () => {
         this.setState({
             isOpenConfirm: !this.state.isOpenConfirm

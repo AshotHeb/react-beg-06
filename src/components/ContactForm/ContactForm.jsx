@@ -8,6 +8,7 @@ import {
     minLength,
     validateEmail
 } from '../../utils/validators';
+
 const API_HOST = "http://localhost:3001";
 
 
@@ -60,14 +61,8 @@ class ContactForm extends React.Component {
 
     handleChange = ({ target: { name, value } }) => {
         let valid = true;
+  
 
-        // if (isRequired(value)) {
-        //     valid = false;
-        //     error = isRequired(value);
-        // } else if (maxLength30(value)) {
-        //     valid = false;
-        //     error = maxLength30(value);
-        // }
         let error = isRequired(value) ||
             maxLength30(value) ||
             minLength1(value) ||
@@ -86,7 +81,7 @@ class ContactForm extends React.Component {
         });
     }
     handleSubmit = () => {
-        // Object.keys(formData[key]).includes("value")
+
         const formData = { ...this.state };
         for (let key in formData) {
             if (typeof formData[key] === "object" && formData[key].hasOwnProperty("value")) {
@@ -96,9 +91,6 @@ class ContactForm extends React.Component {
             }
         }
 
-
-
-        // if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) return;
         this.setState({ loading: true, errorMessage: null });   //Loading Started 
         fetch(`${API_HOST}/form`, {
             method: "POST",
@@ -140,7 +132,7 @@ class ContactForm extends React.Component {
 
         return (
             <>
-                <Form onSubmit={(e) => e.preventDefault()} style={{ maxWidth: "550px", margin: "48px auto 0px" }} novalidate>
+                <Form onSubmit={(e) => e.preventDefault()} style={{ maxWidth: "550px", margin: "48px auto 0px" }} noValidate>
                     <h2 className="mb-5" style={{ color: "red" }}>{this.state.errorMessage}</h2>
                     {inputs}
                     <Button
@@ -158,4 +150,5 @@ class ContactForm extends React.Component {
         )
     }
 }
+
 export default withRouter(ContactForm);
