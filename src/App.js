@@ -9,9 +9,16 @@ import NotFound from './components/pages/NotFound/NotFound';
 import SingleTask from './components/pages/SingleTask/SingleTask';
 import Navbar from './components/Navbar/Navbar';
 
-//Components
-import Hooks from './Demo/Hooks';
 
+//ContextProviders
+import ContactProvider from './context/providers/ContactProvider';
+
+//Components
+// import Hooks from './Demo/Hooks';
+import ContextDemo from './Demo/ContextDemo';
+// import './context/context';
+import ContextDemoProvider from './context/providers/ContextDemoProvider';
+import A from './Demo/A';
 
 const pages = [
   {
@@ -63,15 +70,25 @@ class App extends React.Component {
     });
     return (
       <div className="App">
-        {/* <Navbar />
+        <Navbar />
 
         <Switch>
           {pagesJSX}
           <Redirect to="/error/404" />
-        </Switch> */}
+        </Switch>
 
 
-        <Hooks />
+        {/* <Hooks /> */}
+        <ContextDemoProvider>
+ 
+          <A />
+        </ContextDemoProvider>
+
+
+
+
+
+
       </div>
     );
   }

@@ -2,6 +2,7 @@ import React from 'react';
 import { Form, Button } from 'react-bootstrap';
 import Spinner from '../Spinner/Spinner';
 import { withRouter } from 'react-router-dom';
+import { contactPageContext } from '../../context/context';
 import {
     isRequired,
     maxLength,
@@ -56,12 +57,11 @@ class ContactForm extends React.Component {
         },
         loading: false,
         errorMessage: ""
-
     }
 
     handleChange = ({ target: { name, value } }) => {
         let valid = true;
-  
+
 
         let error = isRequired(value) ||
             maxLength30(value) ||
