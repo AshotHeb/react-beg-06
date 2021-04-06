@@ -9,17 +9,10 @@ import NotFound from './components/pages/NotFound/NotFound';
 import SingleTask from './components/pages/SingleTask/SingleTask';
 import Navbar from './components/Navbar/Navbar';
 
-
-//ContextProviders
-import ContactProvider from './context/providers/ContactProvider';
+//context
+import SingleTaskProvider from './context/providers/SingleTaskProvider';
 
 //Components
-// import Hooks from './Demo/Hooks';
-import ContextDemo from './Demo/ContextDemo';
-// import './context/context';
-import ContextDemoProvider from './context/providers/ContextDemoProvider';
-import A from './Demo/A';
-
 const pages = [
   {
     path: "/",
@@ -59,6 +52,18 @@ class App extends React.Component {
   }
   render() {
     const pagesJSX = pages.map((page, index) => {
+      if (page.path === "/task/:id") {
+        return <Route
+          key={index}
+          path={page.path}
+          render={(props) => (
+            <SingleTaskProvider {...props}>
+              <page.component {...props} />
+            </SingleTaskProvider>
+          )}
+          exact={page.exact}
+        />
+      }
       return (
         <Route
           key={index}
@@ -76,18 +81,7 @@ class App extends React.Component {
           {pagesJSX}
           <Redirect to="/error/404" />
         </Switch>
-
-
         {/* <Hooks /> */}
-        <ContextDemoProvider>
- 
-          <A />
-        </ContextDemoProvider>
-
-
-
-
-
 
       </div>
     );

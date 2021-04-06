@@ -1,15 +1,19 @@
 // import ContactForm from '../../ContactForm/ContactForm';
-import ContactFormWithContext from '../../ContactForm/ContactFormWithContext';
-import ContactProvider from '../../../context/providers/ContactProvider';
+// import ContactFormWithContext from '../../ContactForm/ContactFormWithContext';
+// import ContactProvider from '../../../context/providers/ContactProvider';
+
+import ContactFormWithReducer from '../../ContactForm/ContactFormWithReducer';
 const Contact = (props) => {
 
     return (
         <div>
             <h1 style={{ fontSize: "70px" }}>Contact Page</h1>
             {/* <ContactForm /> */}
-            <ContactProvider>
+            {/* <ContactProvider>
                 <ContactFormWithContext />
-            </ContactProvider>
+            </ContactProvider> */}
+
+            <ContactFormWithReducer />
         </div>
     )
 }

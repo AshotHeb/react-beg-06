@@ -34,7 +34,7 @@ const ContactProvider = (props) => {
         }
     });
     const [loading, setLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("")
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleChange = ({ target: { name, value } }) => {
         let valid = true;
@@ -90,6 +90,7 @@ const ContactProvider = (props) => {
                 setErrorMessage(error.message);
                 console.log("Form Contact Request Errror", error);
             });
+            
     }
     return <contactPageContext.Provider
         value={{
