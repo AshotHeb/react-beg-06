@@ -9,6 +9,7 @@ import NotFound from './components/pages/NotFound/NotFound';
 import SingleTask from './components/pages/SingleTask/SingleTask';
 import Navbar from './components/Navbar/Navbar';
 
+
 //context
 import SingleTaskProvider from './context/providers/SingleTaskProvider';
 

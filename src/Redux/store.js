@@ -1,4 +1,7 @@
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import types from './actionTypes';
+
 const initialState = {
     counter: 0,
     todoState: {
@@ -6,7 +9,8 @@ const initialState = {
         deleteTaskId: null,
         isOpenAddTaskModal: false,
         isOpenConfirm: false,
-        checkedTasks: new Set()
+        checkedTasks: new Set(),
+        oneCheckedTask: null
     },
     loading: false
 }
@@ -24,7 +28,7 @@ const reducer = (state = initialState, action) => {
                 counter: state.counter - 1
             }
         }
-        case "SET_TASKS": {
+        case types.SET_TASKS: {
             return {
                 ...state,
                 todoState: {
@@ -33,7 +37,7 @@ const reducer = (state = initialState, action) => {
                 }
             }
         }
-        case "DELETE_ONE_TASK": {
+        case types.DELETE_ONE_TASK: {
             let tasks = [...state.todoState.tasks];
             tasks = tasks.filter(task => task._id !== action._id);
             return {
@@ -44,13 +48,13 @@ const reducer = (state = initialState, action) => {
                 }
             }
         }
-        case "SET_OR_REMOVE_LOADING": {
+        case types.SET_OR_REMOVE_LOADING: {
             return {
                 ...state,
                 loading: action.isLoading
             }
         }
-        case "SET_DELETE_TASK_ID": {
+        case types.SET_DELETE_TASK_ID: {
             return {
                 ...state,
                 todoState: {
@@ -59,7 +63,7 @@ const reducer = (state = initialState, action) => {
                 }
             }
         }
-        case "TOGGLE_OPEN_ADD_TASK_MODAL": {
+        case types.TOGGLE_OPEN_ADD_TASK_MODAL: {
             return {
                 ...state,
                 todoState: {
@@ -68,7 +72,7 @@ const reducer = (state = initialState, action) => {
                 }
             }
         }
-        case "ADD_TASK": {
+        case types.ADD_TASK: {
             let tasks = [...state.todoState.tasks];
             tasks.push(action.data);
             return {
@@ -80,17 +84,24 @@ const reducer = (state = initialState, action) => {
                 }
             }
         }
-        case "TOGGLE_CONFIRM_MODAL": {
+        case types.TOGGLE_CONFIRM_MODAL: {
+            const { checkedTasks, tasks } = state.todoState;
+            let oneCheckedTask = null;
+            if (checkedTasks.size === 1) {
+                oneCheckedTask = tasks.find(task => task._id === Array.from(checkedTasks)[0]);
+            }
             return {
                 ...state,
                 todoState: {
                     ...state.todoState,
+                    oneCheckedTask,
                     isOpenConfirm: !state.todoState.isOpenConfirm
                 }
             }
 
         }
-        case "TOGGLE_CHECK_TASK": {
+        case types.TOGGLE_CHECK_TASK: {
+            //check
             const { _id } = action;
             let checkedTasks = new Set(state.todoState.checkedTasks);
             if (!checkedTasks.has(_id)) {
@@ -98,6 +109,7 @@ const reducer = (state = initialState, action) => {
             } else {
                 checkedTasks.delete(_id);
             }
+
             return {
                 ...state,
                 todoState: {
@@ -106,7 +118,7 @@ const reducer = (state = initialState, action) => {
                 }
             }
         }
-        case "DELETE_CHECKED_TASKS": {
+        case types.DELETE_CHECKED_TASKS: {
             let tasks = [...state.todoState.tasks];
             tasks = tasks.filter(task => !state.todoState.checkedTasks.has(task._id));
             return {
@@ -119,11 +131,30 @@ const reducer = (state = initialState, action) => {
             }
 
         }
+        case types.TOGGLE_CHECK_ALL: {
+            const { tasks } = state.todoState;
+            let checkedTasks = new Set(state.todoState.checkedTasks);
+            if (tasks.length === checkedTasks.size) {
+                checkedTasks.clear();
+            } else {
+                tasks.forEach(task => {
+                    checkedTasks.add(task._id);
+                });
+            }
+            return {
+                ...state,
+                todoState: {
+                    ...state.todoState,
+                    checkedTasks
+                }
+            }
+        }
+
         default: return state;
     }
 }
 
-const store = createStore(reducer);
+const store = createStore(reducer, applyMiddleware(thunk));
 window.store = store;
 export default store;
 
