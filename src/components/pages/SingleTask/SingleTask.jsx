@@ -1,4 +1,5 @@
 import React, { useContext, useEffect } from 'react';
+import { connect } from 'react-redux';
 import styles from './singleTask.module.css'
 import { Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,28 +7,36 @@ import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
 import TaskModal from '../../TaskModal/TaskModal';
 import { Link } from 'react-router-dom';
 import Spinner from '../../Spinner/Spinner';
-import { singleTaskContext } from '../../../context/context';
+import {
+    setSingleTaskThunk,
+    deletOneTaskThunk,
+    handleEditTaskThunk,
+    toggleSingleTaskModal,
+    resetSingleTaskState
+} from '../../../Redux/action';
 
-const API_HOST = "http://localhost:3001";
 
-const SingleTask = () => {
-    const {
-        singleTask,
-        isEditModal,
-        loading,
 
-        //functions
-        handleEditTask,
-        toggleEditModal,
-        getTask,
-        handleDeleteTask
+const SingleTask = (props) => {
 
-    }
-        = useContext(singleTaskContext);
+
+    const { history, setSingleTaskThunk, resetSingleTaskState } = props;
+    const { id } = props.match.params;
 
     useEffect(() => {
-        getTask();
-    },[getTask]);
+        setSingleTaskThunk(id, history);
+        return function () {
+            resetSingleTaskState()
+        }
+    }, [id, history, setSingleTaskThunk, resetSingleTaskState]);
+
+    const {
+        singleTask,
+        loading,
+        isEditModal
+    } = props;
+
+
 
 
 
@@ -49,14 +58,14 @@ const SingleTask = () => {
                         <Link to="/">Home</Link>
                         <Button
                             variant="danger"
-                        onClick={handleDeleteTask}
+                            onClick={() => props.deletOneTaskThunk(singleTask._id, history)}
                         >
                             <FontAwesomeIcon icon={faTrash} />
                         </Button>
                         <Button
                             variant="warning"
                             className="ml-3"
-                            onClick={() => toggleEditModal(true)}
+                            onClick={props.toggleSingleTaskModal}
                         >
                             <FontAwesomeIcon icon={faEdit} />
                         </Button>
@@ -66,8 +75,8 @@ const SingleTask = () => {
             </div>
             {
                 isEditModal && <TaskModal
-                    onHide={() => toggleEditModal(false)}
-                    onSubmit={handleEditTask}
+                    onHide={props.toggleSingleTaskModal}
+                    onSubmit={(editableTask) => props.handleEditTaskThunk(editableTask, "singleTask")}
                     editableTask={singleTask}
                 />
             }
@@ -78,5 +87,24 @@ const SingleTask = () => {
     );
 
 }
+const mapStateToProps = (state) => {
+    const {
+        singleTask,
+        isEditModal
+    } = state.sinlgeTaskState
+    return {
+        singleTask,
+        isEditModal,
+        loading: state.globalState.loading
+    }
+};
 
-export default SingleTask;
+const mapDispatchToProps = {
+    setSingleTaskThunk,
+    deletOneTaskThunk,
+    handleEditTaskThunk,
+    toggleSingleTaskModal,
+    resetSingleTaskState
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SingleTask);

@@ -39,6 +39,7 @@ class TaskModal extends React.Component {
             date: formatDate(this.state.date)
         }
         this.props.onSubmit(formData);
+     
     }
     componentDidMount() {
         this.inputRef.current.focus();

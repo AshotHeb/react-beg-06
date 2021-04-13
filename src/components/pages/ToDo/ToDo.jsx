@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Task from '../../Task/Task';
 import Confirm from '../../Confirm/Confirm';
 import TaskModal from '../../TaskModal/TaskModal';
@@ -11,162 +11,127 @@ import {
     SetTasksThunk,
     addTaskThunk,
     deletOneTaskThunk,
-    removeCheckedTasks
+    removeCheckedTasks,
+    handleEditTaskThunk
 } from '../../../Redux/action';
 
-const API_HOST = "http://localhost:3001";
 const tasksWrapperRowCls = [
     "mt-5",
     "d-flex",
     "justify-content-center",
 ];
-class ToDo extends React.Component {
+const ToDo = (props) => {
 
 
+    const { setTasks, resetData } = props;
+    useEffect(() => {
+        setTasks();
 
-    toggleSetEditableTask = (editableTask = null) => {
-        this.setState({
-            editableTask
-        });
-    }
-    handleEditTask = (editableTask) => {
-        this.setState({ loading: true });         //Loading Started
-        (async () => {
-            try {
-                const { _id } = editableTask;
-                const response = await fetch(`${API_HOST}/task/${_id}`, {
-                    method: "PUT",
-                    body: JSON.stringify(editableTask),
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                });
-                const data = await response.json();
-                if (data.error) throw data.error;
-                const tasks = [...this.state.tasks];
-                const idx = tasks.findIndex(task => task._id === data._id);
-                tasks[idx] = data;
-                this.setState({
-                    tasks,
-                    editableTask: null
-                });
-            } catch (error) {
-                console.log("Edit Task Request Error", error);
-            }
-            finally {
-                this.setState({ loading: false });  //Loading Ended
-            }
-
-        })()
+        return function () {
+            resetData();
+        }
+    }, [setTasks, resetData]);
 
 
-
-    }
-
-    componentDidMount() {
-        this.props.setTasks();
-    }
-    render() {
-
-        const {
-            checkedTasks,
-            tasks,
-            isOpenAddTaskModal,
-            isOpenConfirm,
-            editableTask,
-            loading,
-            deleteTaskId,
-            oneCheckedTask
-        } = this.props;
-        const tasksJSX = tasks.map(task => {
-            return (
-                <Col key={task._id} className="mt-3" xs={12} sm={6} md={4} lg={3}>
-                    <Task
-                        task={task}
-                        handleDeleteTask={this.props.deletOneTask}
-                        handleToggleCheckTask={this.props.toggleCheckTask}
-                        isAnyTaskChecked={!!checkedTasks.size}
-                        isChecked={checkedTasks.has(task._id)}
-                        setEditableTask={this.toggleSetEditableTask}
-                        isLoadingForDelete={deleteTaskId === task._id}
-                    />
-                </Col>
-            );
-
-        });
-
-
+    const {
+        checkedTasks,
+        tasks,
+        isOpenAddTaskModal,
+        isOpenConfirm,
+        editableTask,
+        loading,
+        deleteTaskId,
+        oneCheckedTask
+    } = props;
+    const tasksJSX = tasks.map(task => {
         return (
-            <>
-                <Container>
-                    <Row className="mt-5">
-                        <Col>
-                            <Button
-                                onClick={this.props.toggleOpenAddTaskModal}
-                                disabled={!!checkedTasks.size}
-                            >
-                                Add Task Modal
-                            </Button>
-                        </Col>
-                    </Row>
-
-                    <Row className={tasksWrapperRowCls.join(' ')}  >
-                        {tasksJSX.length ? tasksJSX : <p>There are no Tasks !</p>}
-                    </Row>
-
-                    <Row className="justify-content-center mt-5">
-                        {
-                            !!tasks.length && <>
-                                <Button
-                                    variant="danger"
-                                    onClick={this.props.toggleConfirmModal}
-                                    disabled={!!!checkedTasks.size}
-                                >
-                                    Delete All Cheked
-                    </Button>
-                                <Button
-                                    className="ml-5"
-                                    variant="primary"
-                                    onClick={this.props.toggleCheckAll}
-                                    disabled={!!!tasks.length}
-                                >
-                                    {
-                                        checkedTasks.size && tasks.length === checkedTasks.size ? "Remove Selected" : "Check All"
-                                    }
-                                </Button>
-                            </>
-                        }
-                    </Row>
-                </Container>
-
-                {
-                    isOpenConfirm && <Confirm
-                        onHide={this.props.toggleConfirmModal}
-                        onSubmit={() => this.props.removeCheckedTasks(checkedTasks)}
-                        countOrOneTaskTitle={oneCheckedTask ? oneCheckedTask.title : checkedTasks.size}
-                    />
-                }
-
-                {
-                    isOpenAddTaskModal && <TaskModal
-                        onHide={this.props.toggleOpenAddTaskModal}
-                        onSubmit={this.props.addTask}
-                    />
-                }
-
-                {
-                    editableTask && <TaskModal
-                        onHide={this.toggleSetEditableTask}
-                        onSubmit={this.handleEditTask}
-                        editableTask={editableTask}
-                    />
-                }
-                {
-                    loading && <Spinner />
-                }
-            </>
+            <Col key={task._id} className="mt-3" xs={12} sm={6} md={4} lg={3}>
+                <Task
+                    task={task}
+                    handleDeleteTask={props.deletOneTask}
+                    handleToggleCheckTask={props.toggleCheckTask}
+                    isAnyTaskChecked={!!checkedTasks.size}
+                    isChecked={checkedTasks.has(task._id)}
+                    setEditableTask={props.setEditTask}
+                    isLoadingForDelete={deleteTaskId === task._id}
+                />
+            </Col>
         );
-    }
+
+    });
+
+
+    return (
+        <>
+            <Container>
+                <Row className="mt-5">
+                    <Col>
+                        <Button
+                            onClick={props.toggleOpenAddTaskModal}
+                            disabled={!!checkedTasks.size}
+                        >
+                            Add Task Modal
+                            </Button>
+                    </Col>
+                </Row>
+
+                <Row className={tasksWrapperRowCls.join(' ')}  >
+                    {tasksJSX.length ? tasksJSX : loading ? "" : <p>There are no Tasks !</p>}
+                </Row>
+
+                <Row className="justify-content-center mt-5">
+                    {
+                        !!tasks.length && <>
+                            <Button
+                                variant="danger"
+                                onClick={props.toggleConfirmModal}
+                                disabled={!!!checkedTasks.size}
+                            >
+                                Delete All Cheked
+                    </Button>
+                            <Button
+                                className="ml-5"
+                                variant="primary"
+                                onClick={props.toggleCheckAll}
+                                disabled={!!!tasks.length}
+                            >
+                                {
+                                    checkedTasks.size && tasks.length === checkedTasks.size ? "Remove Selected" : "Check All"
+                                }
+                            </Button>
+                        </>
+                    }
+                </Row>
+            </Container>
+
+            {
+                isOpenConfirm && <Confirm
+                    onHide={props.toggleConfirmModal}
+                    onSubmit={() => props.removeCheckedTasks(checkedTasks)}
+                    countOrOneTaskTitle={oneCheckedTask ? oneCheckedTask.title : checkedTasks.size}
+                />
+            }
+
+            {
+                isOpenAddTaskModal && <TaskModal
+                    onHide={props.toggleOpenAddTaskModal}
+                    onSubmit={props.addTask}
+                />
+            }
+
+            {
+                editableTask && <TaskModal
+                    onHide={props.setEditTask}
+                    onSubmit={props.editTask}
+                    editableTask={editableTask}
+                />
+            }
+            {
+                loading && <Spinner />
+            }
+        </>
+    );
+
 };
 
 const mapStateToProps = (state) => {
@@ -176,7 +141,8 @@ const mapStateToProps = (state) => {
         isOpenAddTaskModal,
         isOpenConfirm,
         checkedTasks,
-        oneCheckedTask
+        oneCheckedTask,
+        editableTask
     } = state.todoState;
     return {
         tasks,
@@ -185,7 +151,8 @@ const mapStateToProps = (state) => {
         isOpenConfirm,
         checkedTasks,
         oneCheckedTask,
-        loading: state.loading
+        editableTask,
+        loading: state.globalState.loading
     }
 }
 const mapDispatchToProps = (dispatch) => {
@@ -210,17 +177,20 @@ const mapDispatchToProps = (dispatch) => {
             dispatch((dispatch) => removeCheckedTasks(dispatch, checkedTasks));
         },
         setDeletTaskId: (_id) => {
-            dispatch({ type: "SET_DELETE_TASK_ID", _id });
-
+            dispatch({ type: types.SET_DELETE_TASK_ID, _id });
         },
         toggleCheckAll: () => {
             dispatch({ type: types.TOGGLE_CHECK_ALL });
 
         },
         setTasks: () => {
-            dispatch(SetTasksThunk)
-        }
-
+            dispatch(SetTasksThunk);
+        },
+        setEditTask: (editTask) => dispatch({ type: types.SET_EDIT_TASK, editTask }),
+        editTask: (editableTask) => {
+            dispatch(handleEditTaskThunk(editableTask))
+        },
+        resetData: () => dispatch({ type: types.RESET_DATA })
 
 
     }
