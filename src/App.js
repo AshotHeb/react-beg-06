@@ -1,6 +1,8 @@
 import './App.css';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { ToastContainer, toast } from 'react-toastify';
 //pages
 import ToDo from './components/pages/ToDo/ToDo';
 import Contact from './components/pages/Contact/Contact';
@@ -42,51 +44,74 @@ const pages = [
   }
 ];
 
-class App extends React.Component {
-  state = {
-    test: true
-  }
-  handleTest = () => {
-    this.setState({
-      test: !this.state.test
+const App = (props) => {
+  const { errorMessage, successMessage } = props;
+
+  useEffect(() => {
+    errorMessage && toast.error(`🦄 ${errorMessage}`, {
+      position: "bottom-left",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
     });
-  }
-  render() {
-    const pagesJSX = pages.map((page, index) => {
-      if (page.path === "/task/:id") {
-        return <Route
-          key={index}
-          path={page.path}
-          render={(props) => (
-            <SingleTaskProvider {...props}>
-              <page.component {...props} />
-            </SingleTaskProvider>
-          )}
-          exact={page.exact}
-        />
-      }
-      return (
-        <Route
-          key={index}
-          path={page.path}
-          component={page.component}
-          exact={page.exact}
-        />
-      );
+  }, [errorMessage]);
+
+  useEffect(() => {
+    successMessage && toast.success(`🦄 ${successMessage}`, {
+      position: "bottom-left",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
     });
+  }, [successMessage])
+
+
+  const pagesJSX = pages.map((page, index) => {
+    if (page.path === "/task/:id") {
+      return <Route
+        key={index}
+        path={page.path}
+        render={(props) => (
+          <SingleTaskProvider {...props}>
+            <page.component {...props} />
+          </SingleTaskProvider>
+        )}
+        exact={page.exact}
+      />
+    }
     return (
-      <div className="App">
-        <Navbar />
-
-        <Switch>
-          {pagesJSX}
-          <Redirect to="/error/404" />
-        </Switch>
-        {/* <Hooks /> */}
-
-      </div>
+      <Route
+        key={index}
+        path={page.path}
+        component={page.component}
+        exact={page.exact}
+      />
     );
-  }
-}
+  });
+  return (
+    <div className="App">
+      <Navbar />
 
-export default App;
+      <Switch>
+        {pagesJSX}
+        <Redirect to="/error/404" />
+      </Switch>
+
+      <ToastContainer />
+
+    </div>
+  );
+
+}
+const mapStateToProps = (state) => ({
+  errorMessage: state.globalState.errorMessage,
+  successMessage: state.globalState.successMessage
+});
+
+export default connect(mapStateToProps, null)(App);

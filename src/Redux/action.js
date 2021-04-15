@@ -11,7 +11,8 @@ export const SetTasksThunk = (dispatch) => {
             dispatch({ type: types.SET_TASKS, data });
         })
         .catch(error => {
-            console.log("Get All Tasks ", error);
+            dispatch({ type: types.SET_ERROR_MESSAGE, error: error.message });
+
         })
         .finally(() => {
             dispatch({ type: types.SET_OR_REMOVE_LOADING, isLoading: false });
@@ -34,9 +35,13 @@ export const addTaskThunk = (dispatch, formData) => {
             if (data.error)
                 throw data.error;
             dispatch({ type: types.ADD_TASK, data });
+            dispatch({
+                type: types.SET_SUCCESS_MESSAGE,
+                successMessage: "Task was added successfully !"
+            });
         })
         .catch(error => {
-            console.log("Add Task Error", error);
+            dispatch({ type: types.SET_ERROR_MESSAGE, error: error.message });
         })
         .finally(() => {
             dispatch({ type: types.SET_OR_REMOVE_LOADING, isLoading: false });
@@ -56,10 +61,14 @@ export const deletOneTaskThunk = (_id, history = null) => async (dispatch) => {
             history.push("/");
         } else {
             dispatch({ type: types.DELETE_ONE_TASK, _id });
+            dispatch({
+                type: types.SET_SUCCESS_MESSAGE,
+                successMessage: "Task was deleted !"
+            })
         }
 
     } catch (error) {
-        console.log("Delete One Task Request Error", error);
+        dispatch({ type: types.SET_ERROR_MESSAGE, error: error.message });
     }
     finally {
         dispatch({ type: types.SET_DELETE_TASK_ID, _id: null }) //Loading Ended
@@ -81,9 +90,13 @@ export const removeCheckedTasks = (dispatch, checkedTasks) => {
             if (data.error)
                 throw data.error;
             dispatch({ type: types.DELETE_CHECKED_TASKS });
+            dispatch({
+                type: types.SET_SUCCESS_MESSAGE,
+                successMessage: "Checked tasks were deleted !"
+            })
         })
         .catch(error => {
-            console.log("Delete Batch of Tasks Error", error);
+            dispatch({ type: types.SET_ERROR_MESSAGE, error: error.message });
         })
         .finally(() => {
             dispatch({ type: types.SET_OR_REMOVE_LOADING, isLoading: false }); //Loading Ended
@@ -106,14 +119,22 @@ export const handleEditTaskThunk = (editableTask, page = "todo") => (dispatch) =
             if (data.error) throw data.error;
             if (page === "todo") {
                 dispatch({ type: types.EDIT_TASK, data });
+                dispatch({
+                    type: types.SET_SUCCESS_MESSAGE,
+                    successMessage: "Task Edited successfully !"
+                })
             } else if (page === "singleTask") {
                 dispatch({ type: types.SET_SINGLE_TASK, data });
+                dispatch({
+                    type: types.SET_SUCCESS_MESSAGE,
+                    successMessage: "Task Edited successfully !"
+                })
             } else {
                 throw new Error("The Page is not Found!");
             }
 
         } catch (error) {
-            console.log("Edit Task Request Error", error);
+            dispatch({ type: types.SET_ERROR_MESSAGE, error: error.message });
         }
         finally {
             dispatch({ type: types.SET_OR_REMOVE_LOADING, isLoading: false });   //Loading Started
@@ -126,7 +147,7 @@ export const handleEditTaskThunk = (editableTask, page = "todo") => (dispatch) =
 }
 
 export const setSingleTaskThunk = (id, history) => (dispatch) => {
-    // const { id } = props.match.params;
+
     fetch(`${API_HOST}/task/${id}`)
         .then(res => res.json())
         .then(data => {
@@ -135,11 +156,65 @@ export const setSingleTaskThunk = (id, history) => (dispatch) => {
             dispatch({ type: types.SET_SINGLE_TASK, data });
         })
         .catch(error => {
-            console.log("Single Task Get Request ", error);
             history.push(`/error/${error.status}`, error.message);
         });
 
 }
+export const sendContactFromThunk = (formData, history) => (dispatch) => {
+    const formDataCopy = { ...formData };
+    for (let key in formDataCopy) {
+        if (typeof formDataCopy[key] === "object" && formDataCopy[key].hasOwnProperty("value")) {
+            formDataCopy[key] = formDataCopy[key].value;
+        } else {
+            delete formDataCopy[key];
+        }
+    }
+
+    dispatch({ type: types.SET_OR_REMOVE_LOADING, isLoading: true });   //Loading Started
+    fetch(`${API_HOST}/form`, {
+        method: "POST",
+        body: JSON.stringify(formDataCopy),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error)
+                throw data.error;
+            dispatch({
+                type: types.SET_SUCCESS_MESSAGE,
+                successMessage: "Form Sended successfully  !"
+            })
+            history.push("/");
+        })
+        .catch(error => {
+            dispatch({ type: types.SET_OR_REMOVE_LOADING, isLoading: false });   //Loading Started
+            dispatch({ type: types.SET_ERROR_MESSAGE, error: error.message });
+        });
+}
+export const toggleStatusThunk = (task) => (dispatch) => {
+    const status = task.status === "done" ? "active" : "done";
+    fetch(`${API_HOST}/task/${task._id}`, {
+        method: "PUT",
+        body: JSON.stringify({ status }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error)
+                throw data.error;
+            dispatch({ type: types.EDIT_TASK, data });
+            
+        })
+        .catch(error => {
+            dispatch({ type: types.SET_ERROR_MESSAGE, error: error.message });
+        });
+
+}
+
 
 export const toggleSingleTaskModal = () => (dispatch) => {
     dispatch({ type: types.TOGGLE_SINGLETASK_EDIT_MODAL });
@@ -151,3 +226,7 @@ export const resetSingleTaskState = () => (dispatch) => {
 
 }
 
+
+export const changeContactForm = (target) => (dispatch) => {
+    dispatch({ type: types.CHANGE_CONTACT_FORM, target });
+}

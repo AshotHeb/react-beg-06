@@ -12,7 +12,8 @@ import {
     addTaskThunk,
     deletOneTaskThunk,
     removeCheckedTasks,
-    handleEditTaskThunk
+    handleEditTaskThunk,
+    toggleStatusThunk
 } from '../../../Redux/action';
 
 const tasksWrapperRowCls = [
@@ -21,7 +22,6 @@ const tasksWrapperRowCls = [
     "justify-content-center",
 ];
 const ToDo = (props) => {
-
 
     const { setTasks, resetData } = props;
     useEffect(() => {
@@ -40,8 +40,10 @@ const ToDo = (props) => {
         isOpenConfirm,
         editableTask,
         loading,
+        errorMessage,
         deleteTaskId,
-        oneCheckedTask
+        oneCheckedTask,
+
     } = props;
     const tasksJSX = tasks.map(task => {
         return (
@@ -54,6 +56,7 @@ const ToDo = (props) => {
                     isChecked={checkedTasks.has(task._id)}
                     setEditableTask={props.setEditTask}
                     isLoadingForDelete={deleteTaskId === task._id}
+                    toggleStatus={props.toggleStatus}
                 />
             </Col>
         );
@@ -64,6 +67,11 @@ const ToDo = (props) => {
     return (
         <>
             <Container>
+                <Row>
+                    <h1>
+                        {errorMessage}
+                    </h1>
+                </Row>
                 <Row className="mt-5">
                     <Col>
                         <Button
@@ -152,15 +160,17 @@ const mapStateToProps = (state) => {
         checkedTasks,
         oneCheckedTask,
         editableTask,
-        loading: state.globalState.loading
+        loading: state.globalState.loading,
+        errorMessage: state.globalState.errorMessage
     }
 }
 const mapDispatchToProps = (dispatch) => {
     return {
 
         deletOneTask: (_id) => {
-            dispatch((dispatch) => deletOneTaskThunk(dispatch, _id));
+            dispatch((deletOneTaskThunk(_id)));
         },
+        toggleStatus: (task) => dispatch(toggleStatusThunk(task)),
         toggleOpenAddTaskModal: () => {
             dispatch({ type: types.TOGGLE_OPEN_ADD_TASK_MODAL });
         },

@@ -1,7 +1,9 @@
 import types from '../actionTypes';
 
 const initialState = {
-    loading: false
+    loading: false,
+    errorMessage: "",
+    successMessage: ""
 }
 
 const globalReducer = (state = initialState, action) => {
@@ -9,8 +11,22 @@ const globalReducer = (state = initialState, action) => {
         case types.SET_OR_REMOVE_LOADING:
             return {
                 ...state,
-                loading: action.isLoading
+                loading: action.isLoading,
+                errorMessage: action.isLoading ? "" : state.errorMessage,
+                successMessage: action.isLoading ? "" : state.successMessage
             }
+        case types.SET_ERROR_MESSAGE: {
+            return {
+                ...state,
+                errorMessage: action.error
+            }
+        }
+        case types.SET_SUCCESS_MESSAGE: {
+            return {
+                ...state,
+                successMessage: action.successMessage
+            }
+        }
         default: return state;
     }
 }

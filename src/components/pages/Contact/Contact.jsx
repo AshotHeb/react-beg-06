@@ -1,8 +1,6 @@
-// import ContactForm from '../../ContactForm/ContactForm';
-// import ContactFormWithContext from '../../ContactForm/ContactFormWithContext';
-// import ContactProvider from '../../../context/providers/ContactProvider';
 
-import ContactFormWithReducer from '../../ContactForm/ContactFormWithReducer';
+
+import ContactForm from '../../ContactForm/ContactForm';
 const Contact = (props) => {
 
     return (
@@ -13,7 +11,7 @@ const Contact = (props) => {
                 <ContactFormWithContext />
             </ContactProvider> */}
 
-            <ContactFormWithReducer />
+            <ContactForm />
         </div>
     )
 }
