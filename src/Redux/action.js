@@ -207,7 +207,7 @@ export const toggleStatusThunk = (task) => (dispatch) => {
             if (data.error)
                 throw data.error;
             dispatch({ type: types.EDIT_TASK, data });
-            
+
         })
         .catch(error => {
             dispatch({ type: types.SET_ERROR_MESSAGE, error: error.message });
@@ -230,3 +230,14 @@ export const resetSingleTaskState = () => (dispatch) => {
 export const changeContactForm = (target) => (dispatch) => {
     dispatch({ type: types.CHANGE_CONTACT_FORM, target });
 }
+export const setDropDownValueForSearch = (dropDown, value) => (dispatch) => {
+    dispatch({ type: types.SET_DROPDOWN_VARIANT, dropDown, value });
+}
+export const changeSearchValue = (target) => (dispatch) => {
+    dispatch({ type: types.CHANGE_SEARCH_VALUE, target });
+}
+
+export const setDate = (name, date) => (dispatch) => {
+    dispatch({ type: types.SET_DATE, name, date });
+}
+

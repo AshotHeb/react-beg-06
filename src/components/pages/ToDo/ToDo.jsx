@@ -3,6 +3,7 @@ import Task from '../../Task/Task';
 import Confirm from '../../Confirm/Confirm';
 import TaskModal from '../../TaskModal/TaskModal';
 import Spinner from '../../Spinner/Spinner';
+import Search from '../../Search/Search';
 // import styles from './todo.module.css';
 import types from '../../../Redux/actionTypes';
 import { Container, Row, Col, Button } from 'react-bootstrap';
@@ -67,6 +68,11 @@ const ToDo = (props) => {
     return (
         <>
             <Container>
+                <Row>
+                    <Col>
+                        <Search />
+                    </Col>
+                </Row>
                 <Row>
                     <h1>
                         {errorMessage}
