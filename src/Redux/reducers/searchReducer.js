@@ -34,6 +34,11 @@ const searchReducer = (state = initialState, action) => {
                 [name]: date
             }
         }
+        case types.RESET_SEARCH_STATE:{
+            return {
+             ...initialState
+            }
+        }
         default: return state;
     }
 }

@@ -199,7 +199,7 @@ export const toggleStatusThunk = (task) => (dispatch) => {
         method: "PUT",
         body: JSON.stringify({ status }),
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
     })
         .then(res => res.json())
@@ -212,6 +212,37 @@ export const toggleStatusThunk = (task) => (dispatch) => {
         .catch(error => {
             dispatch({ type: types.SET_ERROR_MESSAGE, error: error.message });
         });
+
+}
+export const sortOrFilterThunk = (formData) => (dispatch) => {
+    let formDataFilter = { ...formData };
+    window.formDataFilter = formDataFilter;
+    let query = "?";
+    for (let key in formDataFilter) {
+        if (!formDataFilter[key]) delete formDataFilter[key]
+        else {
+            query += key + "=" + formDataFilter[key] + "&";
+        }
+    }
+    if (Object.keys(formDataFilter).length) {
+        dispatch({ type: types.SET_OR_REMOVE_LOADING, isLoading: true });   //Loading Started
+        fetch(`${API_HOST}/task${query.slice(0, query.length - 1)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.error)
+                    throw data.error;
+                dispatch({ type: types.SET_TASKS, data });
+                dispatch({ type: types.RESET_SEARCH_STATE });
+                
+
+            })
+            .catch(error => {
+                dispatch({ type: types.SET_ERROR_MESSAGE, error: error.message });
+            })
+            .finally(() => {
+                dispatch({ type: types.SET_OR_REMOVE_LOADING, isLoading: false });   //Loading Ended
+            })
+    }
 
 }
 
@@ -240,4 +271,20 @@ export const changeSearchValue = (target) => (dispatch) => {
 export const setDate = (name, date) => (dispatch) => {
     dispatch({ type: types.SET_DATE, name, date });
 }
+
+export const changeModalInput = (target) => (dispatch) => {
+    dispatch({ type: types.CHANGE_MODAL_INPUT, target });
+}
+
+export const changeModalDate = (date) => (dispatch) => {
+    dispatch({ type: types.CHANGE_MODAL_DATE, date });
+}
+export const setEditableTaskToModalState = (editableTask) => (dispatch) => {
+    dispatch({ type: types.SET_EDITABLE_TASK_TO_MODAL_STATE, editableTask });
+}
+export const resetTaskModalState = () => (dispatch) => {
+    dispatch({ type: types.RESET_TASK_MODAL });
+}
+
+
 

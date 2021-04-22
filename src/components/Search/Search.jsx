@@ -5,7 +5,8 @@ import DatePicker from 'react-datepicker';
 import {
     setDropDownValueForSearch,
     changeSearchValue,
-    setDate
+    setDate,
+    sortOrFilterThunk
 } from '../../Redux/action';
 const sortVariants = [
     {
@@ -53,19 +54,21 @@ const statusVariants = [
 ]
 const Search = (props) => {
     const {
-        //state
-        status,
+        // functions
+        setDropDownValueForSearch,
+        changeSearchValue,
+        setDate,
+        sortOrFilterThunk
+    } = props;
+    const {
         sort,
+        status,
         search,
         create_lte,
         create_gte,
         complete_lte,
-        complete_gte,
-        // functions
-        setDropDownValueForSearch,
-        changeSearchValue,
-        setDate
-    } = props;
+        complete_gte
+    } = props.state;
 
     const sortItems = sortVariants.map((variant, index) => {
         return (
@@ -90,7 +93,7 @@ const Search = (props) => {
     return (
         <div>
             <h1>Search</h1>
-            <Form className={styles.form}>
+            <Form className={styles.form} onSubmit={(e) => e.preventDefault()}>
                 <Form.Group className="mt-3">
                     <Form.Control
                         type="search"
@@ -145,7 +148,11 @@ const Search = (props) => {
                 </Form.Group>
 
                 <Form.Group className="mt-3">
-                    <Button variant="primary" type="submit">
+                    <Button
+                        variant="primary"
+                        type="submit"
+                        onClick={() => sortOrFilterThunk(props.state)}
+                    >
                         Submit
   </Button>
 
@@ -156,29 +163,15 @@ const Search = (props) => {
     )
 }
 const mapStateToProps = (state) => {
-    const {
-        sort,
-        status,
-        search,
-        create_lte,
-        create_gte,
-        complete_lte,
-        complete_gte
-    } = state.searchState
     return {
-        sort,
-        status,
-        search,
-        create_lte,
-        create_gte,
-        complete_lte,
-        complete_gte
-        
+        state: state.searchState
+
     }
 }
 const mapDispatchToProps = {
     setDropDownValueForSearch,
     changeSearchValue,
-    setDate
+    setDate,
+    sortOrFilterThunk
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Search);
