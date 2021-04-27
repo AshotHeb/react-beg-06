@@ -1,5 +1,7 @@
 import types from './actionTypes';
-const API_HOST = "http://localhost:3001";
+const API_HOST = process.env.REACT_APP_API_URL;
+
+
 export const SetTasksThunk = (dispatch) => {
     dispatch({ type: types.SET_OR_REMOVE_LOADING, isLoading: true });
     fetch(`${API_HOST}/task`)
@@ -233,7 +235,7 @@ export const sortOrFilterThunk = (formData) => (dispatch) => {
                     throw data.error;
                 dispatch({ type: types.SET_TASKS, data });
                 dispatch({ type: types.RESET_SEARCH_STATE });
-                
+
 
             })
             .catch(error => {
